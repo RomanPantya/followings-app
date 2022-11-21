@@ -1,9 +1,12 @@
+import { faker } from '@faker-js/faker';
 import { UserEntity } from './entities/user.entity';
 
 function generate200Users() {
-  // const users: Omit<UserEntity, 'id'>[] = // TODO
+ // const users = [];
+  const user: Omit<UserEntity, 'id'> = new UserEntity();
+  user.email = faker.internet.email();
 
-  // return users;
+  console.log(user);
 }
 
 async function main() {
