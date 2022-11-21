@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 import { join } from 'path';
 import { DataSourceOptions } from 'typeorm';
+import { UserEntity } from './entities/user.entity';
 
 config();
 config({ path: join(process.cwd(), '.default.env') });
@@ -12,4 +13,5 @@ export const DbConnectionOptions: DataSourceOptions = {
   database: process.env.DB_NAME,
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
+  entities: [UserEntity],
 };
