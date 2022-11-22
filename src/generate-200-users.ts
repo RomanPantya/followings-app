@@ -1,6 +1,11 @@
 import { faker } from '@faker-js/faker';
 import { DataSource } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
+import { config } from 'dotenv';
+import { join } from 'path';
+
+config();
+config({ path: join(process.cwd(), '.default.env') });
 
 function generete200users() {
   return Array.from({ length: 10 }).map(() => {
