@@ -2,22 +2,20 @@ import { faker } from '@faker-js/faker';
 import { DataSource } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
 
-const users = [];
-
 function generete200users() {
-  Array.from({ length: 10 }).forEach(() => {
-    users.push(generateUser());
+  return Array.from({ length: 10 }).map(() => {
+    return generateUser();
   });
 }
 
-function generateUser() {
-  const user: Omit<UserEntity, 'id'> = new UserEntity();
-  user.email = faker.internet.email();
-  return user;
+function generateUser(): Omit<UserEntity, 'id'> {
+  return {
+    email: faker.internet.email(),
+  };
 }
 
 async function main() {
-  const dataSource = new DataSource({
+  const dataSource = await new DataSource({
     type: process.env.DB_TYPE as 'postgres' | 'mysql',
     host: process.env.DB_HOST,
     port: +process.env.DB_PORT,
@@ -26,11 +24,11 @@ async function main() {
     password: process.env.DB_PASS,
     synchronize: true,
     entities: [UserEntity],
-  });
-  await dataSource.initialize();
-  await generete200users();
+  }).initialize();
+
   const UserRepo = dataSource.getRepository(UserEntity);
-  await UserRepo.insert(users);
+
+  await UserRepo.insert(generete200users());
 }
 
 main();
