@@ -9,18 +9,22 @@ export class UserController {
     @InjectRepository(UserEntity)
     private usersRepository: Repository<UserEntity>,
   ) {}
+
   @Get()
   getAllWithFollowings() {
     return this.usersRepository.find();
   }
+
   @Get('/max-following')
   getTop5() {
     return 'Get top 5 users';
   }
+
   @Get('/not-following')
   getAllWithoutFollowings() {
     return 'Get all users without followings';
   }
+
   @Get(':id/')
   getUserById() {
     return 'Get user by id';
