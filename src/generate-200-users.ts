@@ -10,15 +10,17 @@ config();
 config({ path: join(process.cwd(), '.default.env') });
 
 function generete200users(): Omit<UserEntity, 'id'>[] {
-  const gender = random.boolean() ? ('male' as const) : ('female' as const);
-  const first_name = faker.name.firstName(gender);
-  const email = faker.internet.email(first_name);
+  return Array.from({ length: 10 }).map(() => {
+    const gender: 'male' | 'female' = random.boolean() ? 'male' : 'female';
+    const first_name = faker.name.firstName(gender);
+    const email = faker.internet.email(first_name);
 
-  return Array.from({ length: 10 }).map(() => ({
-    email,
-    first_name,
-    gender,
-  }));
+    return {
+      email,
+      first_name,
+      gender,
+    };
+  });
 }
 
 async function main() {
