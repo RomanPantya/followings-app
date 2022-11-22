@@ -13,4 +13,13 @@ export class UserService {
     @InjectRepository(UserEntity)
     private followingRepository: Repository<FollowingsEntity>,
   ) {}
+
+  getFollowersForUser(userId: number) {
+    return this.usersRepository.query(`
+      select u.id, u.first_name from users as u
+      inner join followings as f
+      on u.id = f.follower_id
+      where f.user_id = $1;
+    `, [userId]);
+  } 
 }
