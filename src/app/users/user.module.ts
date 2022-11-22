@@ -7,4 +7,4 @@ import { UserController } from 'src/app/users/user.controller';
   imports: [TypeOrmModule.forFeature([UserEntity])],
   controllers: [UserController],
 })
-export class UsersModule {}
+export class UserModule {}
