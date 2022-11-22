@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker';
 import { DataSource } from 'typeorm';
-import { DbConnectionOptions } from './db-connection-options';
 import { UserEntity } from './entities/user.entity';
 
 const users = [];
@@ -18,7 +17,16 @@ function generateUser() {
 }
 
 async function main() {
-  const dataSource = new DataSource(DbConnectionOptions);
+  const dataSource = new DataSource({
+    type: process.env.DB_TYPE as 'postgres' | 'mysql',
+    host: process.env.DB_HOST,
+    port: +process.env.DB_PORT,
+    database: process.env.DB_NAME,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    synchronize: true,
+    entities: [UserEntity],
+  });
   await dataSource.initialize();
   await generete200users();
   const UserRepo = dataSource.getRepository(UserEntity);
