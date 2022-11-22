@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { UserService } from './user.service';
 
 @Controller('users')
@@ -23,5 +23,12 @@ export class UserController {
   @Get()
   getAllWithFollowings() {
     return 'Get all';
+  }
+
+  @Get(':id/followers')
+  getFollowersForUser(
+    @Param('id') userId: number,
+  ) {
+    return this.userService.getFollowersForUser(userId);
   }
 }
