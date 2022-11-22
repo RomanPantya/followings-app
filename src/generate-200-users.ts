@@ -4,16 +4,21 @@ import { UserEntity } from './entities/user.entity';
 import { config } from 'dotenv';
 import { join } from 'path';
 import { FollowingsEntity } from './entities/followings.entity';
+import random from 'random';
 
 config();
 config({ path: join(process.cwd(), '.default.env') });
 
-function generete200users() {
-  return Array.from({ length: 10 }).map(() => {
-    return {
-      email: faker.internet.email(),
-    };
-  });
+function generete200users(): Omit<UserEntity, 'id'>[] {
+  const gender = random.boolean() ? ('male' as const) : ('female' as const);
+  const first_name = faker.name.firstName(gender);
+  const email = faker.internet.email(first_name);
+
+  return Array.from({ length: 10 }).map(() => ({
+    email,
+    first_name,
+    gender,
+  }));
 }
 
 async function main() {
