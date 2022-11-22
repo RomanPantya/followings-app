@@ -1,32 +1,27 @@
 import { Controller, Get } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { UserEntity } from '../../entities/user.entity';
+import { UserService } from './user.service';
 
 @Controller('users')
 export class UserController {
-  constructor(
-    @InjectRepository(UserEntity)
-    private usersRepository: Repository<UserEntity>,
-  ) {}
+  constructor(private userService: UserService) {}
 
-  @Get()
-  getAllWithFollowings() {
-    return this.usersRepository.find();
-  }
-
-  @Get('/max-following')
+  @Get('max-following')
   getTop5() {
     return 'Get top 5 users';
   }
 
-  @Get('/not-following')
+  @Get('not-following')
   getAllWithoutFollowings() {
     return 'Get all users without followings';
   }
 
-  @Get(':id/')
+  @Get(':id')
   getUserById() {
     return 'Get user by id';
+  }
+
+  @Get()
+  getAllWithFollowings() {
+    return 'Get all';
   }
 }
