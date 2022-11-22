@@ -1,17 +1,18 @@
 import { faker } from '@faker-js/faker';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
 import { config } from 'dotenv';
 import { join } from 'path';
 import { FollowingsEntity } from './entities/followings.entity';
-import random from 'random';
+import { getRandomInt } from './utils/random-number.util';
 
 config();
 config({ path: join(process.cwd(), '.default.env') });
 
 function genereteUsers(count = 200): Omit<UserEntity, 'id'>[] {
   return Array.from({ length: count }).map(() => {
-    const gender: 'male' | 'female' = random.boolean() ? 'male' : 'female';
+    const gender: 'male' | 'female' =
+      new Date().getTime() % 3 ? 'female' : 'male';
     const first_name = faker.name.firstName(gender);
     const email = faker.internet.email(first_name);
 
@@ -21,6 +22,15 @@ function genereteUsers(count = 200): Omit<UserEntity, 'id'>[] {
       gender,
     };
   });
+}
+
+// "userId" start following "followerId"
+async function makeFollowing(repo: Repository<FollowingsEntity>, following: FollowingsEntity) {
+  try {
+    await repo.insert(following);
+  } catch (error) {
+    // it means such following reloation is already exists
+  }
 }
 
 async function main() {
@@ -36,8 +46,38 @@ async function main() {
   }).initialize();
 
   const UserRepo = dataSource.getRepository(UserEntity);
+  const FollowingRepo = dataSource.getRepository(FollowingsEntity);
+  const { raw } = await UserRepo.insert(genereteUsers());
+  const generatedUsers = raw.map(({ id }) => id);
+  const all = await UserRepo.find();
+  const allUsers = all.map(({ id }) => id);
+  const totalUsersCount = allUsers.length;
 
-  await UserRepo.insert(genereteUsers());
+
+  const promises = generatedUsers.map((userId) => {
+    const x = getRandomInt(0, 10_000);
+
+    if (x % 5 === 0) return Promise.resolve();
+    else if (x % 3 === 0) {
+      return Promise.all(
+        Array.from({ length: getRandomInt(1, 11) })
+          .map(() => makeFollowing(FollowingRepo, {
+            user_id: allUsers[getRandomInt(0, totalUsersCount)],
+            follower_id: userId,
+          })));
+    } else if (x % 4) {
+      return Promise.all(
+        Array.from({ length: getRandomInt(1, 5) })
+          .map(() => makeFollowing(FollowingRepo, {
+            user_id: allUsers[getRandomInt(0, totalUsersCount)],
+            follower_id: userId,
+          })));
+    }
+
+    return makeFollowing(FollowingRepo, { user_id: generatedUsers[getRandomInt(0, totalUsersCount)], follower_id: userId });
+  });
+
+  await Promise.all(promises);
 }
 
 main();
