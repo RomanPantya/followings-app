@@ -3,20 +3,17 @@ import { DataSource } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
 import { config } from 'dotenv';
 import { join } from 'path';
+import { FollowingsEntity } from './entities/followings.entity';
 
 config();
 config({ path: join(process.cwd(), '.default.env') });
 
 function generete200users() {
   return Array.from({ length: 10 }).map(() => {
-    return generateUser();
+    return {
+      email: faker.internet.email(),
+    };
   });
-}
-
-function generateUser(): Omit<UserEntity, 'id'> {
-  return {
-    email: faker.internet.email(),
-  };
 }
 
 async function main() {
@@ -28,7 +25,7 @@ async function main() {
     username: process.env.DB_USER,
     password: process.env.DB_PASS,
     synchronize: true,
-    entities: [UserEntity],
+    entities: [UserEntity, FollowingsEntity],
   }).initialize();
 
   const UserRepo = dataSource.getRepository(UserEntity);
