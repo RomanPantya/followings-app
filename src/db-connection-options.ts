@@ -1,12 +1,11 @@
 import { config } from 'dotenv';
 import { join } from 'path';
-import { DataSourceOptions } from 'typeorm';
-import { UserEntity } from './entities/user.entity';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 config();
 config({ path: join(process.cwd(), '.default.env') });
 
-export const DbConnectionOptions: DataSourceOptions = {
+export const DbConnectionOptions: TypeOrmModuleOptions = {
   type: process.env.DB_TYPE as 'postgres' | 'mysql',
   host: process.env.DB_HOST,
   port: +process.env.DB_PORT,
@@ -14,5 +13,5 @@ export const DbConnectionOptions: DataSourceOptions = {
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
   synchronize: true,
-  entities: [UserEntity],
+  autoLoadEntities: true,
 };
