@@ -5,6 +5,12 @@ export class UserEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
+  @Column()
+  first_name!: string;
+
+  @Column()
+  gender!: 'male' | 'female';
+
   @Column({ unique: true })
   email!: string;
 }
