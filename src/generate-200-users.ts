@@ -9,8 +9,8 @@ import random from 'random';
 config();
 config({ path: join(process.cwd(), '.default.env') });
 
-function generete200users(): Omit<UserEntity, 'id'>[] {
-  return Array.from({ length: 10 }).map(() => {
+function genereteUsers(count = 200): Omit<UserEntity, 'id'>[] {
+  return Array.from({ length: count }).map(() => {
     const gender: 'male' | 'female' = random.boolean() ? 'male' : 'female';
     const first_name = faker.name.firstName(gender);
     const email = faker.internet.email(first_name);
@@ -37,7 +37,7 @@ async function main() {
 
   const UserRepo = dataSource.getRepository(UserEntity);
 
-  await UserRepo.insert(generete200users());
+  await UserRepo.insert(genereteUsers());
 }
 
 main();
