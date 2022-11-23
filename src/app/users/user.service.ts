@@ -10,7 +10,7 @@ export class UserService {
     @InjectRepository(UserEntity)
     private usersRepository: Repository<UserEntity>,
 
-    @InjectRepository(UserEntity)
+    @InjectRepository(FollowingsEntity)
     private followingRepository: Repository<FollowingsEntity>,
   ) {}
 
@@ -22,4 +22,13 @@ export class UserService {
       where f.user_id = $1;
     `, [userId]);
   } 
+
+  getAllWithoutFollowings() {
+return this.usersRepository.query(`
+select u.id, u.first_name from users u
+left join followings f
+on u.id = f.follower_id
+where f.follower_id is null
+`)
+  }
 }

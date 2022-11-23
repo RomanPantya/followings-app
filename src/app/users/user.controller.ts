@@ -3,7 +3,7 @@ import { UserService } from './user.service';
 
 @Controller('users')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) { }
 
   @Get('max-following')
   getTop5() {
@@ -12,7 +12,7 @@ export class UserController {
 
   @Get('not-following')
   getAllWithoutFollowings() {
-    return 'Get all users without followings';
+    return this.userService.getAllWithoutFollowings();
   }
 
   @Get(':id')
