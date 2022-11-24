@@ -10,9 +10,21 @@ export class UserController {
     return 'Get top 5 users';
   }
 
+  @Get('followings')
+  getAllWithFollowings() {
+    return this.userService.getAllWithFollowings();
+  }
+
   @Get('not-following')
   getAllWithoutFollowings() {
     return this.userService.getAllWithoutFollowings();
+  }
+
+  @Get(':id/followers')
+  getFollowersForUser(
+    @Param('id') userId: number,
+  ) {
+    return this.userService.getFollowersForUser(userId);
   }
 
   @Get(':id')
@@ -21,14 +33,7 @@ export class UserController {
   }
 
   @Get()
-  getAllWithFollowings() {
-    return 'Get all';
-  }
-
-  @Get(':id/followers')
-  getFollowersForUser(
-    @Param('id') userId: number,
-  ) {
-    return this.userService.getFollowersForUser(userId);
+  getAll() {
+    return this.userService.getAll()
   }
 }

@@ -12,23 +12,41 @@ export class UserService {
 
     @InjectRepository(FollowingsEntity)
     private followingRepository: Repository<FollowingsEntity>,
-  ) {}
+  ) { }
 
   getFollowersForUser(userId: number) {
     return this.usersRepository.query(`
-      select u.id, u.first_name from users as u
-      inner join followings as f
+      select u.id, u.first_name from users u
+      inner join followings f
       on u.id = f.follower_id
       where f.user_id = $1;
     `, [userId]);
-  } 
+  }
 
   getAllWithoutFollowings() {
-return this.usersRepository.query(`
-select u.id, u.first_name from users u
-left join followings f
-on u.id = f.follower_id
-where f.follower_id is null
+    return this.usersRepository.query(`
+      select u.id, u.first_name from users u
+      left join followings f
+      on u.id = f.follower_id
+      where f.follower_id is null
 `)
+  }
+
+  getAllWithFollowings() {
+    return this.usersRepository.query(`
+      select distinct u.id, u.first_name from users u
+      inner join followings f
+      on u.id = f.follower_id
+      order by u.id
+    `)
+  }
+
+  getAll() {
+    return this.usersRepository.query(`
+      select distinct u.*, f.user_id as following from users u
+      left join followings f
+      on u.id = f.follower_id
+      order by u.id
+    `)
   }
 }
