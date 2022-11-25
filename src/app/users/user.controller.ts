@@ -27,6 +27,10 @@ export class UserController {
     return this.userService.getFollowersForUser(userId);
   }
 
+  // @Get('friends')
+  // getAllFriends() { 
+  // }
+
   @Get(':id')
   getUserById() {
     return 'Get user by id';
