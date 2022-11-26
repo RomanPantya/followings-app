@@ -48,10 +48,9 @@ export class UserService {
       on u.id = f.follower_id
       order by u.id
     `);
-    console.log(array);
 
     const all = [];
-
+    
     const result = array.reduce((acc, obj) => {
       console.log(obj);
       if (obj.following === null) return acc;
@@ -63,15 +62,19 @@ export class UserService {
       acc[obj.id].followings.push(obj.following);
       all.push(obj.following);
 
-
-
       return acc;
     }, {} as Record<number, any>);
-    const allUsers = await this.usersRepository.findBy({ id: In(all)});
+    const allUsers = await this.usersRepository.find({
+      select: {
+        first_name: true,
+        id: true,
+      },
+      where: { id: In(Array.from(new Set(all))) }
+    });
 
     Object.values(result).forEach((user: any) => {
       console.log(user);
-      user.followings = user.followings.map((id) => allUsers.find((u) => u.id = id));
+      user.followings = user.followings.map((id) => allUsers.find((u) => u.id === id));
     });
 
     return result;
