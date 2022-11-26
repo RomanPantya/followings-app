@@ -50,10 +50,9 @@ export class UserService {
     `);
 
     const all = [];
-    
+
     const result = array.reduce((acc, obj) => {
-      console.log(obj);
-      if (obj.following === null) return acc;
+      //if (obj.following === null) return acc;
       if (!acc[obj.id]) acc[obj.id] = {
         first_name: obj.first_name,
         followings: [],
@@ -96,6 +95,16 @@ export class UserService {
       on f.user_id = uf.follower_id
 	    and f.follower_id = uf.user_id
       where u.id > f.user_id
+    `)
+  }
+
+  getTop5() {
+    return this.usersRepository.query(`
+      select u.id, u.first_name, count(f.user_id) from users u
+      join followings f
+      on u.id = f.follower_id
+      group by id
+      order by count desc limit 5
     `)
   }
 }

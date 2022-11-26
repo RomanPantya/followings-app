@@ -7,7 +7,7 @@ export class UserController {
 
   @Get('max-following')
   getTop5() {
-    return 'Get top 5 users';
+    return this.userService.getTop5();
   }
 
   @Get('followings')
