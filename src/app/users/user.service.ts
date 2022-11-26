@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FollowingsEntity } from 'src/entities/followings.entity';
 import { UserEntity } from 'src/entities/user.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -42,62 +42,57 @@ export class UserService {
   }
 
   async getAll() {
-    const result = await this.usersRepository.query(`
+    const array = await this.usersRepository.query(`
       select distinct u.*, f.user_id as following from users u
       left join followings f
       on u.id = f.follower_id
       order by u.id
     `);
-    // return array.reduce((acc, obj) => {
-    //   if (!acc[obj.id]) acc[obj.id] = [];
+    console.log(array);
+
+    const all = [];
+
+    const result = array.reduce((acc, obj) => {
+      console.log(obj);
+      if (obj.following === null) return acc;
+      if (!acc[obj.id]) acc[obj.id] = {
+        first_name: obj.first_name,
+        followings: [],
+      };
+
+      acc[obj.id].followings.push(obj.following);
+      all.push(obj.following);
 
 
 
-    //   return acc;
-    // }, {} as Record<number, any>);
-    // console.log(array);
-    const arrWithoutCopy = [result[0]];
-    for (let i = 1; i < result.length; ++i) {
-      if (result[i].id === arrWithoutCopy[arrWithoutCopy.length - 1].id) {
+      return acc;
+    }, {} as Record<number, any>);
+    const allUsers = await this.usersRepository.findBy({ id: In(all)});
 
-        if (arrWithoutCopy[arrWithoutCopy.length - 1].following.length) {
-          arrWithoutCopy[arrWithoutCopy.length - 1].following.push(result[i].following);
-        } else {
-          arrWithoutCopy[arrWithoutCopy.length - 1].following = [arrWithoutCopy[arrWithoutCopy.length - 1].following];
-          arrWithoutCopy[arrWithoutCopy.length - 1].following.push(result[i].following);
-        }
-        continue;
-      }
+    Object.values(result).forEach((user: any) => {
+      console.log(user);
+      user.followings = user.followings.map((id) => allUsers.find((u) => u.id = id));
+    });
 
-      arrWithoutCopy.push(result[i]);
-    }
-
-    return arrWithoutCopy;
+    return result;
   }
 
   getAllFriends() {
     return this.usersRepository.query(`
-    select first.id, first.first_name, second.id, second.first_name
+      select
+      u.first_name friend_one, u.id, uf.first_name friend_two, uf.id _id
+      from users as u
 
-from 
+      left join followings as f
+      on u.id = f.follower_id
 
-(select * from users
-right join followings
-on users.id = followings.follower_id) as first
-
-inner join
-
-(select * from users
-right join followings
-on users.id = followings.follower_id) as second
-
-on first.user_id = second.follower_id
-
-where first.follower_id = second.user_id
-
-
-order by first.id
-
+      inner join
+      (select u.first_name, u.id, f.* from users as u
+      left join followings as f
+      on u.id = f.follower_id) as uf
+      on f.user_id = uf.follower_id
+	    and f.follower_id = uf.user_id
+      where u.id > f.user_id
     `)
   }
 }
