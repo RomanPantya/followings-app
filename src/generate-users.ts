@@ -4,7 +4,7 @@ import { UserEntity } from './entities/user.entity';
 import { config } from 'dotenv';
 import { join } from 'path';
 import { FollowingsEntity } from './entities/followings.entity';
-import { getRandomInt } from './utils/random-number.util';
+import { getRandomBool, getRandomInt } from './utils/random-number.util';
 
 config();
 config({ path: join(process.cwd(), '.default.env') });
@@ -12,7 +12,7 @@ config({ path: join(process.cwd(), '.default.env') });
 function genereteUsers(count = 200): Omit<UserEntity, 'id'>[] {
   return Array.from({ length: count }).map(() => {
     const gender: 'male' | 'female' =
-      new Date().getTime() % 3 ? 'female' : 'male';
+      getRandomBool() ? 'female' : 'male';
     const first_name = faker.name.firstName(gender);
     const email = faker.internet.email(first_name);
 
@@ -47,7 +47,19 @@ async function main() {
 
   const UserRepo = dataSource.getRepository(UserEntity);
   const FollowingRepo = dataSource.getRepository(FollowingsEntity);
-  const { raw } = await UserRepo.insert(genereteUsers());
+
+  const args = process.argv.slice(2);
+
+  if (args.includes('--fresh')) {
+    await FollowingRepo.delete({});
+    await UserRepo.delete({});
+  }
+
+  const count = +args.find((arg) => /--count=\d{1,6}/.test(arg))?.split('=')[1] || undefined;
+
+
+
+  const { raw } = await UserRepo.insert(genereteUsers(count));
   const generatedUsers = raw.map(({ id }) => id);
   const all = await UserRepo.find();
   const allUsers = all.map(({ id }) => id);
@@ -78,6 +90,7 @@ async function main() {
   });
 
   await Promise.all(promises);
+  await dataSource.destroy();
 }
 
 main();

@@ -40,4 +40,9 @@ export class UserController {
   ) { 
     return this.userService.getAllInfoForUser(userId, options);
   }
+
+  @Get()
+  getAll() {
+    return this.userService.getAll()
+  }
 }

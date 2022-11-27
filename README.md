@@ -15,23 +15,37 @@ DB_NAME=followings-app
 ```
 
 * install all dependencies
-```bash
-npm install
-```
+  ```bash
+  npm install
+  ```
 
-* seed database with fake users
-```bash
-npm run generate-200-users
-```
+* seed database with fake users (default 200)
+  ```bash
+  npm run generate-users
+  ```
+
+  * flags:
+    * `-- --fresh` fresh database and then generate users:
+      ```
+      npm run generate-users -- --fresh
+      ```
+    * `-- --count=number` implicitly set (number) of generated users (default 200)
+      ```
+      npm run generate-users -- --count=777
+      ```
+    * or both:
+      ```
+      npm run generate users -- --fresh --count=3
+      ```
 
 * run server
-```bash
-npm run start:dev
-```
+  ```bash
+  npm run start:dev
+  ```
 
 * to see swagger documentation navigate to `/doc` route
 
 * you can use collection from this file in your postman:
-```bash
-followings-app.postman_collection.json
-```
+  ```bash
+  followings-app.postman_collection.json
+  ```
