@@ -1,5 +1,6 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { UserService } from './user.service';
+import { GetUserByIdQueryDto } from './query.dto';
 
 @Controller('users')
 export class UserController {
@@ -22,7 +23,7 @@ export class UserController {
 
   @Get(':id/followers')
   getFollowersForUser(
-    @Param('id') userId: number,
+    @Param('id', ParseIntPipe) userId: number,
   ) {
     return this.userService.getFollowersForUser(userId);
   }
@@ -32,13 +33,11 @@ export class UserController {
     return this.userService.getAllFriends()
   }
 
-  @Get(':id')
-  getUserById() {
-    return 'Get user by id';
-  }
-
-  @Get()
-  getAll() {
-    return this.userService.getAll()
+  @Get(':id/friends')
+  getUserById(
+   @Param('id', ParseIntPipe) userId: number,
+   @Query() options: GetUserByIdQueryDto,
+  ) { 
+    return this.userService.getAllInfoForUser(userId, options);
   }
 }

@@ -37,3 +37,12 @@ select
     
     order by userId
 ```
+
+```sql "getOne"
+select distinct u.*, f.user_id as following, ff.follower_id from users u
+      left join followings f
+      on u.id = f.follower_id
+	  inner join followings ff
+	  on ff.user_id = u.id
+	  where u.id = 222
+      order by u.id
