@@ -18,7 +18,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "generate-users": "npx ts-node src/generate-200-users.ts"
+    "generate-users": "npx ts-node src/generate-users.ts"
   },
   "dependencies": {
     "@faker-js/faker": "^7.6.0",
