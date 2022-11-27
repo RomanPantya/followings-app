@@ -30,3 +30,8 @@ npm run start:dev
 ```
 
 * to see swagger documentation navigate to `/doc` route
+
+* you can use collection from this file in your postman:
+```bash
+followings-app.postman_collection.json
+```
